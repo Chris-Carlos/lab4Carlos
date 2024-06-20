@@ -1,0 +1,2 @@
+Starship   100       
+Battleship 800       
