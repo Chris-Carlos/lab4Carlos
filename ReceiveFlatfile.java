@@ -27,30 +27,30 @@ public class ReceiveFlatfile {
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
         System.out.println(" [*] Waiting for data...Press CTRL+C to cancel");
 
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+        DeliverCallback deliverCallback = (_, delivery) -> {
             String encryptedData = new String(delivery.getBody(), "UTF-8");
             System.out.println(" [*] Received data from RabbitMQ...");
 
             // Decrypt the received encrypted data
-            String decryptedData = caesarCipherDecrypt(encryptedData, SHIFT_VALUE);
+            String decryptedData = caesarCipherDecrypt(encryptedData);
 
             // Print the received encrypted and decrypted data
             System.out.println("\nEncrypted Text: " + encryptedData);
             System.out.println("Decrypted Text: " + decryptedData);
         };
 
-        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, _ -> {
         });
     }
 
-    private static String caesarCipherDecrypt(String encryptedData, int shift) {
+    private static String caesarCipherDecrypt(String encryptedData) {
         StringBuilder decryptedText = new StringBuilder();
 
         for (char character : encryptedData.toCharArray()) {
             if (Character.isLetter(character)) {
                 char base = Character.isLowerCase(character) ? 'a' : 'A';
                 int originalAlphabetPosition = character - base;
-                int newAlphabetPosition = (originalAlphabetPosition - shift + 26) % 26; // Ensure positive result
+                int newAlphabetPosition = (originalAlphabetPosition - ReceiveFlatfile.SHIFT_VALUE + 26) % 26; // Ensure positive result
                 char newCharacter = (char) (base + newAlphabetPosition);
                 decryptedText.append(newCharacter);
             } else {

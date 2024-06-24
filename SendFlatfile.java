@@ -22,13 +22,13 @@ public class SendFlatfile {
 
     public static void main(String[] argv) throws Exception {
         // Read contents from flatfile.txt
-        String serializedData = readFromFile("ships.txt");
+        String serializedData = readFromFile();
 
         // Print plaintext and encrypted text
         System.out.println("Plaintext: " + serializedData);
 
         // Encrypt the serialized data using Caesar Cipher
-        String encryptedData = caesarCipherEncrypt(serializedData.getBytes(), SHIFT_VALUE);
+        String encryptedData = caesarCipherEncrypt(serializedData.getBytes());
 
         // Print encrypted data
         System.out.println("Encrypted text: " + encryptedData);
@@ -44,9 +44,9 @@ public class SendFlatfile {
         }
     }
 
-    private static String readFromFile(String fileName) throws IOException {
+    private static String readFromFile() throws IOException {
         StringBuilder fileContent = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("ships.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 fileContent.append(line).append("\n");
@@ -55,14 +55,14 @@ public class SendFlatfile {
         return fileContent.toString();
     }
 
-    private static String caesarCipherEncrypt(byte[] data, int shift) {
+    private static String caesarCipherEncrypt(byte[] data) {
         StringBuilder encryptedData = new StringBuilder();
         for (byte b : data) {
             char character = (char) b;
             if (Character.isLetter(character)) {
                 char base = Character.isLowerCase(character) ? 'a' : 'A';
                 int originalAlphabetPosition = character - base;
-                int newAlphabetPosition = (originalAlphabetPosition + shift) % 26;
+                int newAlphabetPosition = (originalAlphabetPosition + SendFlatfile.SHIFT_VALUE) % 26;
                 char newCharacter = (char) (base + newAlphabetPosition);
                 encryptedData.append(newCharacter);
             } else {

@@ -66,20 +66,7 @@ public class HMAC_Serialization_WebServiceCaller {
     public static void sendToServer(String json, String hmac) {
         try {
             // Specify the URL of the web service
-            String url = "http://localhost:8000/receive";
-
-            // Create a URL object
-            URL obj = new URL(url);
-
-            // Open a connection to the URL
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-            // Set the request method
-            con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
-
-            // Send POST data
-            con.setDoOutput(true);
+            HttpURLConnection con = getConnection();
             OutputStream os = con.getOutputStream();
             os.write((json + "\n" + hmac).getBytes(StandardCharsets.UTF_8));
             os.flush();
@@ -105,6 +92,24 @@ public class HMAC_Serialization_WebServiceCaller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static HttpURLConnection getConnection() throws IOException {
+        String url = "http://localhost:8000/receive";
+
+        // Create a URL object
+        URL obj = new URL(url);
+
+        // Open a connection to the URL
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        // Set the request method
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
+
+        // Send POST data
+        con.setDoOutput(true);
+        return con;
     }
 
     public static String calculateHMAC(String data, String key)
